@@ -115,7 +115,7 @@ jobs:
                   LinearLayout.LayoutParams openParams =
                           new LinearLayout.LayoutParams(
                                   -1,
-                                  dp(42)
+                                  dp(38)
                           );
 
                   openParams.topMargin = dp(6);
@@ -186,7 +186,7 @@ jobs:
 
                   TextView brand = text(
                           "AVESON CENTRAL",
-                          24,
+                          22,
                           Color.WHITE
                   );
 
@@ -444,7 +444,7 @@ jobs:
 
                   back.setText("←  BACK");
                   back.setTextColor(TEXT);
-                  back.setTextSize(13);
+                  back.setTextSize(10);
                   back.setAllCaps(false);
                   back.setGravity(Gravity.CENTER);
                   back.setBackgroundResource(
@@ -479,7 +479,7 @@ jobs:
 
                   menu.setText("☰  MENU");
                   menu.setTextColor(TEXT);
-                  menu.setTextSize(12);
+                  menu.setTextSize(10);
                   menu.setAllCaps(false);
                   menu.setGravity(Gravity.CENTER);
                   menu.setBackgroundResource(
@@ -663,7 +663,7 @@ jobs:
 
                   back.setText("←  BACK");
                   back.setTextColor(TEXT);
-                  back.setTextSize(12);
+                  back.setTextSize(10);
                   back.setAllCaps(false);
                   back.setGravity(Gravity.CENTER);
                   back.setBackgroundResource(
