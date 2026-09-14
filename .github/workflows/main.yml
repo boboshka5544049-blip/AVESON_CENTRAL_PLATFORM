@@ -25,11 +25,16 @@ jobs:
         with:
           gradle-version: "8.9"
 
+      - name: Extract AVESON CENTRAL project
+        run: |
+          unzip -o AVESON_CENTRAL_GITHUB_READY.zip -d aveson_project
+
       - name: Build APK
+        working-directory: aveson_project
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: AVESON-CENTRAL-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: aveson_project/app/build/outputs/apk/debug/app-debug.apk
