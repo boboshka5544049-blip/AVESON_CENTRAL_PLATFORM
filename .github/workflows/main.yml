@@ -420,7 +420,7 @@ jobs:
 
                   root.setPadding(
                           dp(18),
-                          dp(35),
+                          dp(42),
                           dp(18),
                           dp(24)
                   );
@@ -458,7 +458,7 @@ jobs:
                   LinearLayout.LayoutParams backParams =
                           new LinearLayout.LayoutParams(
                                   0,
-                                  dp(44),
+                                  dp(40),
                                   1
                           );
 
@@ -479,7 +479,7 @@ jobs:
 
                   menu.setText("☰  MENU");
                   menu.setTextColor(TEXT);
-                  menu.setTextSize(13);
+                  menu.setTextSize(12);
                   menu.setAllCaps(false);
                   menu.setGravity(Gravity.CENTER);
                   menu.setBackgroundResource(
@@ -663,7 +663,7 @@ jobs:
 
                   back.setText("←  BACK");
                   back.setTextColor(TEXT);
-                  back.setTextSize(13);
+                  back.setTextSize(12);
                   back.setAllCaps(false);
                   back.setGravity(Gravity.CENTER);
                   back.setBackgroundResource(
