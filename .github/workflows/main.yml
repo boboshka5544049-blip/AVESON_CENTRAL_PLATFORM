@@ -8,62 +8,880 @@ on:
 
 jobs:
   build:
-    LinearLayout card = new LinearLayout(this);
-    card.setOrientation(LinearLayout.VERTICAL);
-    card.setPadding(dp(18), dp(14), dp(18), dp(14));
-    card.setBackgroundResource(R.drawable.panel);
+    runs-on: ubuntu-latest
 
-    TextView name = text(icon + "  " + title, 18, Color.WHITE);
-    name.setTypeface(null, android.graphics.Typeface.BOLD);
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
-    TextView sub = text(subtitle, 13, Color.rgb(158,166,199));
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
 
-    Button open = new Button(this);
-    open.setText("OPEN  →");
-    open.setTextColor(Color.WHITE);
-    open.setTextSize(12);
-    open.setAllCaps(false);
-    open.setGravity(Gravity.CENTER);
-    open.setMinHeight(0);
-    open.setMinimumHeight(0);
-    open.setPadding(0, 0, 0, 0);
-    open.setBackgroundResource(R.drawable.button);
+      - name: Setup Gradle 8.9
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: "8.9"
 
-    LinearLayout.LayoutParams nameParams =
-            new LinearLayout.LayoutParams(-1, dp(34));
+      - name: Extract AVESON CENTRAL project
+        run: |
+          unzip -o AVESON_CENTRAL_ARTIST_CONTROL_READY.zip -d aveson_project
 
-    LinearLayout.LayoutParams subParams =
-            new LinearLayout.LayoutParams(-1, dp(34));
+      - name: Replace MainActivity.java
+        working-directory: aveson_project
+        run: |
+          cat > app/src/main/java/com/aveson/central/MainActivity.java <<'EOF'
+          package com.aveson.central;
 
-    LinearLayout.LayoutParams openParams =
-            new LinearLayout.LayoutParams(-1, dp(42));
+          import android.content.Intent;
+          import android.graphics.Color;
+          import android.os.Bundle;
+          import android.view.Gravity;
+          import android.widget.Button;
+          import android.widget.LinearLayout;
+          import android.widget.ScrollView;
+          import android.widget.TextView;
+          import android.widget.Toast;
 
-    openParams.topMargin = dp(6);
+          import androidx.appcompat.app.AppCompatActivity;
 
-    card.addView(name, nameParams);
-    card.addView(sub, subParams);
-    card.addView(open, openParams);
+          public class MainActivity extends AppCompatActivity {
 
-    LinearLayout.LayoutParams p =
-            new LinearLayout.LayoutParams(-1, -2);
+              private int dp(float value) {
+                  return (int)(value * getResources().getDisplayMetrics().density + 0.5f);
+              }
 
-    p.setMargins(0, dp(7), 0, dp(7));
-    card.setLayoutParams(p);
+              private TextView text(String value, float size, int color) {
+                  TextView t = new TextView(this);
+                  t.setText(value);
+                  t.setTextSize(size);
+                  t.setTextColor(color);
+                  t.setGravity(Gravity.CENTER_VERTICAL);
+                  return t;
+              }
 
-    open.setOnClickListener(v -> {
-        if (title.equals("AVESON ARTIST CONTROL")) {
-            startActivity(new Intent(
-                    MainActivity.this,
-                    ArtistControlActivity.class
-            ));
-        } else {
-            Toast.makeText(
-                    this,
-                    title + " — keyingi bosqichda ochiladi",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
-    });
+              private LinearLayout room(String icon, String title, String subtitle) {
+                  LinearLayout card = new LinearLayout(this);
+                  card.setOrientation(LinearLayout.VERTICAL);
+                  card.setPadding(
+                          dp(18),
+                          dp(14),
+                          dp(18),
+                          dp(14)
+                  );
+                  card.setBackgroundResource(R.drawable.panel);
 
-    return card;
-}
+                  TextView name = text(
+                          icon + "  " + title,
+                          18,
+                          Color.WHITE
+                  );
+                  name.setTypeface(
+                          null,
+                          android.graphics.Typeface.BOLD
+                  );
+
+                  TextView sub = text(
+                          subtitle,
+                          13,
+                          Color.rgb(158,166,199)
+                  );
+
+                  Button open = new Button(this);
+                  open.setText("OPEN  →");
+                  open.setTextColor(Color.WHITE);
+                  open.setTextSize(12);
+                  open.setAllCaps(false);
+                  open.setGravity(Gravity.CENTER);
+                  open.setMinHeight(0);
+                  open.setMinimumHeight(0);
+                  open.setPadding(0, 0, 0, 0);
+                  open.setBackgroundResource(R.drawable.button);
+
+                  LinearLayout.LayoutParams nameParams =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(34)
+                          );
+
+                  LinearLayout.LayoutParams subParams =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(34)
+                          );
+
+                  LinearLayout.LayoutParams openParams =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(42)
+                          );
+
+                  openParams.topMargin = dp(6);
+
+                  card.addView(name, nameParams);
+                  card.addView(sub, subParams);
+                  card.addView(open, openParams);
+
+                  LinearLayout.LayoutParams cardParams =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  -2
+                          );
+
+                  cardParams.setMargins(
+                          0,
+                          dp(7),
+                          0,
+                          dp(7)
+                  );
+
+                  card.setLayoutParams(cardParams);
+
+                  open.setOnClickListener(v -> {
+                      if (title.equals("AVESON ARTIST CONTROL")) {
+
+                          startActivity(
+                                  new Intent(
+                                          MainActivity.this,
+                                          ArtistControlActivity.class
+                                  )
+                          );
+
+                      } else {
+
+                          Toast.makeText(
+                                  MainActivity.this,
+                                  title + " — keyingi bosqichda ochiladi",
+                                  Toast.LENGTH_SHORT
+                          ).show();
+
+                      }
+                  });
+
+                  return card;
+              }
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  ScrollView scroll = new ScrollView(this);
+                  scroll.setBackgroundColor(
+                          Color.rgb(8,10,20)
+                  );
+
+                  LinearLayout root = new LinearLayout(this);
+                  root.setOrientation(
+                          LinearLayout.VERTICAL
+                  );
+
+                  root.setPadding(
+                          dp(18),
+                          dp(14),
+                          dp(18),
+                          dp(18)
+                  );
+
+                  TextView brand = text(
+                          "AVESON CENTRAL",
+                          24,
+                          Color.WHITE
+                  );
+
+                  brand.setTypeface(
+                          null,
+                          android.graphics.Typeface.BOLD
+                  );
+
+                  brand.setGravity(Gravity.CENTER);
+
+                  root.addView(
+                          brand,
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(42)
+                          )
+                  );
+
+                  TextView subtitle = text(
+                          "CONTROL CENTER",
+                          11,
+                          Color.rgb(56,189,248)
+                  );
+
+                  subtitle.setGravity(Gravity.CENTER);
+
+                  root.addView(
+                          subtitle,
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(24)
+                          )
+                  );
+
+                  TextView ecosystem = text(
+                          "GLOBAL MUSIC ECOSYSTEM",
+                          12,
+                          Color.rgb(139,92,246)
+                  );
+
+                  ecosystem.setGravity(Gravity.CENTER);
+
+                  root.addView(
+                          ecosystem,
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(35)
+                          )
+                  );
+
+                  root.addView(
+                          room(
+                                  "🎤",
+                                  "AVESON ARTIST CONTROL",
+                                  "Artistlar va release'larni boshqarish."
+                          )
+                  );
+
+                  root.addView(
+                          room(
+                                  "🎵",
+                                  "AVESON MUSIC CONTROL",
+                                  "Music katalog va music tizimini boshqarish."
+                          )
+                  );
+
+                  root.addView(
+                          room(
+                                  "🌐",
+                                  "AVESON DISTRIBUTION CONTROL",
+                                  "Release'larni global platformalarga tarqatish."
+                          )
+                  );
+
+                  scroll.addView(root);
+                  setContentView(scroll);
+              }
+          }
+          EOF
+
+      - name: Replace ArtistControlActivity.java
+        working-directory: aveson_project
+        run: |
+          cat > app/src/main/java/com/aveson/central/ArtistControlActivity.java <<'EOF'
+          package com.aveson.central;
+
+          import android.graphics.Color;
+          import android.graphics.Typeface;
+          import android.os.Bundle;
+          import android.view.Gravity;
+          import android.widget.Button;
+          import android.widget.LinearLayout;
+          import android.widget.ScrollView;
+          import android.widget.TextView;
+          import android.widget.Toast;
+
+          import androidx.appcompat.app.AppCompatActivity;
+
+          public class ArtistControlActivity extends AppCompatActivity {
+
+              private final int BG = Color.rgb(7,9,18);
+              private final int CARD = Color.rgb(18,22,40);
+              private final int TEXT = Color.WHITE;
+              private final int MUTED = Color.rgb(158,166,199);
+              private final int BLUE = Color.rgb(56,189,248);
+              private final int PURPLE = Color.rgb(139,92,246);
+
+              private LinearLayout root;
+
+              private int dp(float value) {
+                  return (int)(
+                          value *
+                          getResources()
+                                  .getDisplayMetrics()
+                                  .density
+                          + 0.5f
+                  );
+              }
+
+              private TextView label(
+                      String value,
+                      float size,
+                      int color
+              ) {
+                  TextView t = new TextView(this);
+                  t.setText(value);
+                  t.setTextSize(size);
+                  t.setTextColor(color);
+                  t.setGravity(Gravity.CENTER_VERTICAL);
+                  return t;
+              }
+
+              private Button menuButton(String value) {
+                  Button b = new Button(this);
+
+                  b.setText(value);
+                  b.setTextColor(TEXT);
+                  b.setTextSize(15);
+                  b.setAllCaps(false);
+                  b.setGravity(
+                          Gravity.CENTER_VERTICAL |
+                          Gravity.LEFT
+                  );
+
+                  b.setPadding(
+                          dp(18),
+                          0,
+                          dp(18),
+                          0
+                  );
+
+                  b.setBackgroundResource(
+                          R.drawable.button
+                  );
+
+                  LinearLayout.LayoutParams p =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(52)
+                          );
+
+                  p.setMargins(
+                          0,
+                          dp(6),
+                          0,
+                          dp(6)
+                  );
+
+                  b.setLayoutParams(p);
+
+                  return b;
+              }
+
+              private Button mainButton(String value) {
+                  Button b = new Button(this);
+
+                  b.setText(value);
+                  b.setTextColor(TEXT);
+                  b.setTextSize(15);
+                  b.setAllCaps(false);
+                  b.setGravity(
+                          Gravity.CENTER_VERTICAL |
+                          Gravity.LEFT
+                  );
+
+                  b.setPadding(
+                          dp(18),
+                          0,
+                          dp(18),
+                          0
+                  );
+
+                  b.setBackgroundResource(
+                          R.drawable.button
+                  );
+
+                  LinearLayout.LayoutParams p =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(58)
+                          );
+
+                  p.setMargins(
+                          0,
+                          dp(7),
+                          0,
+                          dp(7)
+                  );
+
+                  b.setLayoutParams(p);
+
+                  return b;
+              }
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  showHome();
+              }
+
+              private void showHome() {
+
+                  ScrollView scroll = new ScrollView(this);
+                  scroll.setBackgroundColor(BG);
+
+                  root = new LinearLayout(this);
+                  root.setOrientation(
+                          LinearLayout.VERTICAL
+                  );
+
+                  root.setPadding(
+                          dp(18),
+                          dp(16),
+                          dp(18),
+                          dp(24)
+                  );
+
+                  scroll.addView(root);
+                  setContentView(scroll);
+
+                  LinearLayout top =
+                          new LinearLayout(this);
+
+                  top.setOrientation(
+                          LinearLayout.HORIZONTAL
+                  );
+
+                  top.setGravity(
+                          Gravity.CENTER_VERTICAL
+                  );
+
+                  Button back =
+                          new Button(this);
+
+                  back.setText("←  BACK");
+                  back.setTextColor(TEXT);
+                  back.setTextSize(13);
+                  back.setAllCaps(false);
+                  back.setGravity(Gravity.CENTER);
+                  back.setBackgroundResource(
+                          R.drawable.button
+                  );
+
+                  back.setOnClickListener(
+                          v -> finish()
+                  );
+
+                  LinearLayout.LayoutParams backParams =
+                          new LinearLayout.LayoutParams(
+                                  0,
+                                  dp(44),
+                                  1
+                          );
+
+                  backParams.setMargins(
+                          0,
+                          0,
+                          dp(8),
+                          0
+                  );
+
+                  top.addView(
+                          back,
+                          backParams
+                  );
+
+                  Button menu =
+                          new Button(this);
+
+                  menu.setText("☰  MENU");
+                  menu.setTextColor(TEXT);
+                  menu.setTextSize(13);
+                  menu.setAllCaps(false);
+                  menu.setGravity(Gravity.CENTER);
+                  menu.setBackgroundResource(
+                          R.drawable.button
+                  );
+
+                  menu.setOnClickListener(
+                          v -> showMenu()
+                  );
+
+                  LinearLayout.LayoutParams menuParams =
+                          new LinearLayout.LayoutParams(
+                                  0,
+                                  dp(44),
+                                  1
+                          );
+
+                  menuParams.setMargins(
+                          dp(8),
+                          0,
+                          0,
+                          0
+                  );
+
+                  top.addView(
+                          menu,
+                          menuParams
+                  );
+
+                  root.addView(top);
+
+                  TextView title =
+                          label(
+                                  "AVESON ARTIST CONTROL",
+                                  26,
+                                  TEXT
+                          );
+
+                  title.setTypeface(
+                          Typeface.DEFAULT,
+                          Typeface.BOLD
+                  );
+
+                  title.setGravity(
+                          Gravity.CENTER
+                  );
+
+                  LinearLayout.LayoutParams titleParams =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(70)
+                          );
+
+                  titleParams.topMargin = dp(10);
+
+                  root.addView(
+                          title,
+                          titleParams
+                  );
+
+                  TextView subtitle =
+                          label(
+                                  "Artist management • Release review • Content control",
+                                  13,
+                                  MUTED
+                          );
+
+                  subtitle.setGravity(
+                          Gravity.CENTER
+                  );
+
+                  root.addView(
+                          subtitle,
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(40)
+                          )
+                  );
+
+                  TextView section =
+                          label(
+                                  "MAIN CONTROL",
+                                  16,
+                                  BLUE
+                          );
+
+                  section.setTypeface(
+                          Typeface.DEFAULT,
+                          Typeface.BOLD
+                  );
+
+                  LinearLayout.LayoutParams sectionParams =
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(46)
+                          );
+
+                  sectionParams.topMargin = dp(12);
+
+                  root.addView(
+                          section,
+                          sectionParams
+                  );
+
+                  Button artists =
+                          mainButton(
+                                  "👤  ARTISTS"
+                          );
+
+                  Button releases =
+                          mainButton(
+                                  "🎵  RELEASE REVIEW"
+                          );
+
+                  Button pending =
+                          mainButton(
+                                  "⏳  PENDING REVIEW"
+                          );
+
+                  Button videos =
+                          mainButton(
+                                  "🎬  VIDEO & CLIPS"
+                          );
+
+                  root.addView(artists);
+                  root.addView(releases);
+                  root.addView(pending);
+                  root.addView(videos);
+
+                  artists.setOnClickListener(
+                          v -> message(
+                                  "ARTISTS",
+                                  "Artist management.\n\n" +
+                                  "• Artist profiles\n" +
+                                  "• Artist status\n" +
+                                  "• Releases\n" +
+                                  "• Video submissions"
+                          )
+                  );
+
+                  releases.setOnClickListener(
+                          v -> message(
+                                  "RELEASE REVIEW",
+                                  "Incoming music releases will appear here.\n\n" +
+                                  "Admin can review artist submissions."
+                          )
+                  );
+
+                  pending.setOnClickListener(
+                          v -> message(
+                                  "PENDING REVIEW",
+                                  "All submissions waiting for admin decision."
+                          )
+                  );
+
+                  videos.setOnClickListener(
+                          v -> message(
+                                  "VIDEO & CLIPS",
+                                  "Artist video and clip submissions will appear here."
+                          )
+                  );
+              }
+
+              private void showMenu() {
+
+                  root.removeAllViews();
+
+                  LinearLayout top =
+                          new LinearLayout(this);
+
+                  top.setOrientation(
+                          LinearLayout.HORIZONTAL
+                  );
+
+                  top.setGravity(
+                          Gravity.CENTER_VERTICAL
+                  );
+
+                  Button back =
+                          new Button(this);
+
+                  back.setText("←  BACK");
+                  back.setTextColor(TEXT);
+                  back.setTextSize(13);
+                  back.setAllCaps(false);
+                  back.setGravity(Gravity.CENTER);
+                  back.setBackgroundResource(
+                          R.drawable.button
+                  );
+
+                  back.setOnClickListener(
+                          v -> showHome()
+                  );
+
+                  top.addView(
+                          back,
+                          new LinearLayout.LayoutParams(
+                                  0,
+                                  dp(44),
+                                  1
+                          )
+                  );
+
+                  TextView menuTitle =
+                          label(
+                                  "MENU",
+                                  16,
+                                  BLUE
+                          );
+
+                  menuTitle.setGravity(
+                          Gravity.CENTER
+                  );
+
+                  top.addView(
+                          menuTitle,
+                          new LinearLayout.LayoutParams(
+                                  0,
+                                  dp(44),
+                                  1
+                          )
+                  );
+
+                  root.addView(top);
+
+                  TextView title =
+                          label(
+                                  "CONTROL MENU",
+                                  26,
+                                  TEXT
+                          );
+
+                  title.setTypeface(
+                          Typeface.DEFAULT,
+                          Typeface.BOLD
+                  );
+
+                  title.setGravity(
+                          Gravity.CENTER
+                  );
+
+                  root.addView(
+                          title,
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(70)
+                          )
+                  );
+
+                  addMenuItem(
+                          "✅  APPROVED",
+                          "Approved content."
+                  );
+
+                  addMenuItem(
+                          "❌  REJECTED",
+                          "Rejected submissions."
+                  );
+
+                  addMenuItem(
+                          "🌐  DISTRIBUTION",
+                          "Distribution control."
+                  );
+
+                  addMenuItem(
+                          "©  RIGHTS & COPYRIGHT",
+                          "Rights and copyright management."
+                  );
+
+                  addMenuItem(
+                          "💰  ROYALTIES",
+                          "Royalty management."
+                  );
+
+                  addMenuItem(
+                          "📊  ANALYTICS",
+                          "Artist and release analytics."
+                  );
+
+                  addMenuItem(
+                          "⚙  PARAMETERS",
+                          "System parameters."
+                  );
+
+                  addMenuItem(
+                          "📜  RULES / TERMS",
+                          "Rules and terms."
+                  );
+
+                  addMenuItem(
+                          "🔐  SECURITY",
+                          "Security settings."
+                  );
+              }
+
+              private void addMenuItem(
+                      String title,
+                      String message
+              ) {
+
+                  Button b = menuButton(title);
+
+                  b.setOnClickListener(
+                          v -> Toast.makeText(
+                                  this,
+                                  message,
+                                  Toast.LENGTH_SHORT
+                          ).show()
+                  );
+
+                  root.addView(b);
+              }
+
+              private void message(
+                      String heading,
+                      String body
+              ) {
+
+                  root.removeAllViews();
+
+                  Button back =
+                          menuButton(
+                                  "←  BACK"
+                          );
+
+                  back.setOnClickListener(
+                          v -> showHome()
+                  );
+
+                  root.addView(back);
+
+                  TextView title =
+                          label(
+                                  heading,
+                                  25,
+                                  TEXT
+                          );
+
+                  title.setTypeface(
+                          Typeface.DEFAULT,
+                          Typeface.BOLD
+                  );
+
+                  root.addView(
+                          title,
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(65)
+                          )
+                  );
+
+                  TextView info =
+                          label(
+                                  body,
+                                  15,
+                                  MUTED
+                          );
+
+                  info.setGravity(
+                          Gravity.TOP
+                  );
+
+                  root.addView(
+                          info,
+                          new LinearLayout.LayoutParams(
+                                  -1,
+                                  dp(180)
+                          )
+                  );
+
+                  Button home =
+                          menuButton(
+                                  "🎤  ARTIST CONTROL HOME"
+                          );
+
+                  home.setOnClickListener(
+                          v -> showHome()
+                  );
+
+                  root.addView(home);
+              }
+          }
+          EOF
+
+      - name: Fix Kotlin dependencies
+        working-directory: aveson_project
+        run: |
+          cat >> app/build.gradle <<'EOF'
+
+          configurations.all {
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+          }
+          EOF
+
+      - name: Build APK
+        working-directory: aveson_project
+        run: |
+          gradle :app:assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AVESON-CENTRAL-debug
+          path: aveson_project/app/build/outputs/apk/debug/app-debug.apk
