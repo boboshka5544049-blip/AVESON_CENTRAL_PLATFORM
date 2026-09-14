@@ -1,51 +1,31 @@
-name: Build AVESON CENTRAL APK
-
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Setup Gradle 8.9
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          gradle-version: "8.9"
-
-      - name: Extract AVESON CENTRAL project
-        run: |
-          unzip -o AVESON_CENTRAL_ARTIST_CONTROL_READY.zip -d aveson_project
-
-      - name: Fix Kotlin dependencies
+      - name: Fix MainActivity Java
         working-directory: aveson_project
         run: |
-          cat >> app/build.gradle <<'EOF'
+          python3 - <<'PY'
+          p = "app/src/main/java/com/aveson/central/MainActivity.java"
 
-          configurations.all {
-              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
-              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-          }
-          EOF
+          s = open(p, "r", encoding="utf-8").read()
 
-      - name: Build APK
-        working-directory: aveson_project
-        run: gradle :app:assembleDebug --stacktrace
+          old = '''open.setOnClickListener(v ->
+              if (title.equals("AVESON ARTIST CONTROL")) { startActivity(new Intent(MainActivity.this, ArtistControlActivity.class)); } else { Toast.makeText(this, title + " — keyingi bosqichda ochiladi", Toast.LENGTH_SHORT).show(); }
+          );'''
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: AVESON-CENTRAL-debug
-          path: aveson_project/app/build/outputs/apk/debug/app-debug.apk
+          new = '''open.setOnClickListener(v -> {
+              if (title.equals("AVESON ARTIST CONTROL")) {
+                  startActivity(new Intent(MainActivity.this, ArtistControlActivity.class));
+              } else {
+                  Toast.makeText(
+                          this,
+                          title + " — keyingi bosqichda ochiladi",
+                          Toast.LENGTH_SHORT
+                  ).show();
+              }
+          });'''
+
+          if old in s:
+              s = s.replace(old, new)
+              open(p, "w", encoding="utf-8").write(s)
+              print("MainActivity.java fixed")
+          else:
+              print("Target code not found; leaving file unchanged")
+          PY
