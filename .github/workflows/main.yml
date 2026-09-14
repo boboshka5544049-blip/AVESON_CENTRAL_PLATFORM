@@ -1,51 +1,359 @@
-name: Build AVESON CENTRAL APK
+package com.aveson.central;
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+import androidx.appcompat.app.AppCompatActivity;
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+public class ArtistControlActivity extends AppCompatActivity {
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "17"
+    int BG = Color.rgb(7, 8, 18);
+    int CARD = Color.rgb(19, 20, 35);
+    int CARD2 = Color.rgb(25, 26, 45);
 
-      - name: Setup Gradle 8.9
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          gradle-version: "8.9"
+    int PURPLE = Color.rgb(145, 75, 255);
+    int BLUE = Color.rgb(65, 135, 255);
+    int CYAN = Color.rgb(55, 210, 230);
 
-      - name: Extract AVESON CENTRAL project
-        run: |
-          unzip -o AVESON_CENTRAL_GITHUB_READY.zip -d aveson_project
+    int WHITE = Color.WHITE;
+    int MUTED = Color.rgb(175, 177, 200);
 
-      - name: Fix Kotlin dependencies
-        working-directory: aveson_project
-        run: |
-          cat >> app/build.gradle <<'EOF'
+    LinearLayout root;
 
-          configurations.all {
-              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
-              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-          }
-          EOF
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-      - name: Build APK
-        working-directory: aveson_project
-        run: gradle :app:assembleDebug --stacktrace
+        showHome();
+    }
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: AVESON-CENTRAL-debug
-          path: aveson_project/app/build/outputs/apk/debug/app-debug.apk
+    TextView text(String value, float size, int color, boolean bold) {
+
+        TextView t = new TextView(this);
+
+        t.setText(value);
+        t.setTextColor(color);
+        t.setTextSize(size);
+        t.setPadding(0, 8, 0, 8);
+
+        if (bold) {
+            t.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        }
+
+        return t;
+    }
+
+    Button menuButton(String value) {
+
+        Button b = new Button(this);
+
+        b.setText(value);
+        b.setTextColor(WHITE);
+        b.setTextSize(15);
+        b.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+        b.setAllCaps(false);
+        b.setBackgroundColor(CARD);
+
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        72
+                );
+
+        lp.setMargins(0, 7, 0, 7);
+
+        b.setLayoutParams(lp);
+
+        return b;
+    }
+
+    void baseScreen() {
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setBackgroundColor(BG);
+
+        root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setPadding(24, 24, 24, 30);
+
+        scroll.addView(root);
+
+        setContentView(scroll);
+    }
+
+    void showHome() {
+
+        baseScreen();
+
+        TextView back = text(
+                "←  BACK TO AVESON CENTRAL",
+                14,
+                BLUE,
+                true
+        );
+
+        back.setOnClickListener(v -> finish());
+
+        root.addView(back);
+
+        root.addView(text(
+                "AVESON ARTIST CONTROL",
+                28,
+                WHITE,
+                true
+        ));
+
+        root.addView(text(
+                "Artist management center",
+                14,
+                MUTED,
+                false
+        ));
+
+        root.addView(text(
+                "Manage artists, releases, content, rights and approvals.",
+                13,
+                MUTED,
+                false
+        ));
+
+        root.addView(text(
+                "ADMIN CONTROL",
+                17,
+                CYAN,
+                true
+        ));
+
+        Button dashboard = menuButton(
+                "◈  DASHBOARD\nOverview and system activity"
+        );
+
+        Button artists = menuButton(
+                "👤  ARTISTS\nArtist accounts and profiles"
+        );
+
+        Button releases = menuButton(
+                "🎵  RELEASE QUEUE\nReview artist releases"
+        );
+
+        Button pending = menuButton(
+                "⏳  PENDING REVIEW\nContent waiting for decision"
+        );
+
+        Button approved = menuButton(
+                "✓  APPROVED\nApproved releases"
+        );
+
+        Button rejected = menuButton(
+                "✕  REJECTED\nRejected submissions"
+        );
+
+        Button videos = menuButton(
+                "🎬  VIDEO & CLIPS\nArtist video submissions"
+        );
+
+        Button distribution = menuButton(
+                "🌐  DISTRIBUTION\nApproved releases → platforms"
+        );
+
+        Button rights = menuButton(
+                "©  RIGHTS & COPYRIGHT\nOwnership and copyright"
+        );
+
+        Button royalties = menuButton(
+                "💰  ROYALTIES\nArtist royalty operations"
+        );
+
+        Button settings = menuButton(
+                "⚙  SETTINGS\nArtist Control settings"
+        );
+
+        root.addView(dashboard);
+        root.addView(artists);
+        root.addView(releases);
+        root.addView(pending);
+        root.addView(approved);
+        root.addView(rejected);
+        root.addView(videos);
+        root.addView(distribution);
+        root.addView(rights);
+        root.addView(royalties);
+        root.addView(settings);
+
+        dashboard.setOnClickListener(v ->
+                page(
+                        "DASHBOARD",
+                        "AVESON ARTIST CONTROL overview\n\n" +
+                        "Artists: Demo\n" +
+                        "Pending releases: Demo\n" +
+                        "Approved releases: Demo\n" +
+                        "Rejected releases: Demo\n" +
+                        "System status: Online"
+                )
+        );
+
+        artists.setOnClickListener(v ->
+                page(
+                        "ARTISTS",
+                        "Artist accounts\n\n" +
+                        "Artist profiles and onboarding will appear here.\n\n" +
+                        "• Artist profile\n" +
+                        "• Artist status\n" +
+                        "• Release history\n" +
+                        "• Content history"
+                )
+        );
+
+        releases.setOnClickListener(v ->
+                page(
+                        "RELEASE QUEUE",
+                        "Artist yuborgan relizlarni tekshirish.\n\n" +
+                        "Release\n" +
+                        "Artist\n" +
+                        "Type\n" +
+                        "Audio\n" +
+                        "Cover\n" +
+                        "Status\n\n" +
+                        "Demo queue — database keyingi bosqichda ulanadi."
+                )
+        );
+
+        pending.setOnClickListener(v ->
+                page(
+                        "PENDING REVIEW",
+                        "Admin qarorini kutayotgan barcha materiallar.\n\n" +
+                        "REVIEW ACTIONS\n\n" +
+                        "✓ APPROVE\n" +
+                        "✕ REJECT\n\n" +
+                        "Haqiqiy release ma'lumotlari backend ulangandan keyin chiqadi."
+                )
+        );
+
+        approved.setOnClickListener(v ->
+                page(
+                        "APPROVED",
+                        "Tasdiqlangan artist kontenti.\n\n" +
+                        "Approved releases distribution bosqichiga o'tishi mumkin."
+                )
+        );
+
+        rejected.setOnClickListener(v ->
+                page(
+                        "REJECTED",
+                        "Rad etilgan submissionlar.\n\n" +
+                        "Har bir rejection uchun sabab saqlanadi."
+                )
+        );
+
+        videos.setOnClickListener(v ->
+                page(
+                        "VIDEO & CLIPS",
+                        "Artist yuborgan video va clip materiallari.\n\n" +
+                        "• Video review\n" +
+                        "• Clip review\n" +
+                        "• Status\n" +
+                        "• Approve / Reject"
+                )
+        );
+
+        distribution.setOnClickListener(v ->
+                page(
+                        "DISTRIBUTION",
+                        "Approved releases uchun distribution nazorati.\n\n" +
+                        "Spotify\n" +
+                        "Apple Music\n" +
+                        "YouTube Music\n" +
+                        "TikTok / Instagram\n\n" +
+                        "Real DSP delivery uchun tegishli partner/API integratsiyasi kerak."
+                )
+        );
+
+        rights.setOnClickListener(v ->
+                page(
+                        "RIGHTS & COPYRIGHT",
+                        "Rights Center\n\n" +
+                        "• Master ownership\n" +
+                        "• Publishing\n" +
+                        "• Splits\n" +
+                        "• Copyright\n" +
+                        "• Content ID"
+                )
+        );
+
+        royalties.setOnClickListener(v ->
+                page(
+                        "ROYALTIES",
+                        "Artist royalty operations.\n\n" +
+                        "Statements: Demo\n" +
+                        "Artist balances: Demo\n" +
+                        "Royalty reports: Demo"
+                )
+        );
+
+        settings.setOnClickListener(v ->
+                page(
+                        "SETTINGS",
+                        "AVESON ARTIST CONTROL settings.\n\n" +
+                        "• Review rules\n" +
+                        "• Artist controls\n" +
+                        "• Distribution settings\n" +
+                        "• System preferences"
+                )
+        );
+    }
+
+    void page(String title, String description) {
+
+        baseScreen();
+
+        TextView back = text(
+                "←  ARTIST CONTROL",
+                14,
+                BLUE,
+                true
+        );
+
+        back.setOnClickListener(v -> showHome());
+
+        root.addView(back);
+
+        root.addView(text(
+                title,
+                27,
+                WHITE,
+                true
+        ));
+
+        LinearLayout card = new LinearLayout(this);
+
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(20, 20, 20, 20);
+        card.setBackgroundColor(CARD2);
+
+        TextView info = text(
+                description,
+                15,
+                MUTED,
+                false
+        );
+
+        card.addView(info);
+
+        root.addView(card);
+
+        Button home = menuButton(
+                "🎤  ARTIST CONTROL HOME"
+        );
+
+        home.setOnClickListener(v -> showHome());
+
+        root.addView(home);
+    }
+}
