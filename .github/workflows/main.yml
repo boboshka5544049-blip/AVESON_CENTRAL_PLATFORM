@@ -29,37 +29,222 @@ jobs:
         run: |
           unzip -o AVESON_CENTRAL_ARTIST_CONTROL_READY.zip -d aveson_project
 
-      - name: Fix MainActivity Java
+      - name: Replace MainActivity.java
         working-directory: aveson_project
         run: |
-          python3 - <<'PY'
-          p = "app/src/main/java/com/aveson/central/MainActivity.java"
+          cat > app/src/main/java/com/aveson/central/MainActivity.java <<'EOF'
+          package com.aveson.central;
 
-          s = open(p, "r", encoding="utf-8").read()
+          import android.content.Intent;
+          import android.graphics.Color;
+          import android.os.Bundle;
+          import android.view.Gravity;
+          import android.widget.Button;
+          import android.widget.LinearLayout;
+          import android.widget.ScrollView;
+          import android.widget.TextView;
+          import android.widget.Toast;
 
-          old = '''open.setOnClickListener(v ->
-              if (title.equals("AVESON ARTIST CONTROL")) { startActivity(new Intent(MainActivity.this, ArtistControlActivity.class)); } else { Toast.makeText(this, title + " — keyingi bosqichda ochiladi", Toast.LENGTH_SHORT).show(); }
-          );'''
+          import androidx.appcompat.app.AppCompatActivity;
 
-          new = '''open.setOnClickListener(v -> {
-              if (title.equals("AVESON ARTIST CONTROL")) {
-                  startActivity(new Intent(MainActivity.this, ArtistControlActivity.class));
-              } else {
-                  Toast.makeText(
-                          this,
-                          title + " — keyingi bosqichda ochiladi",
-                          Toast.LENGTH_SHORT
-                  ).show();
+          public class MainActivity extends AppCompatActivity {
+
+              private int dp(float value) {
+                  return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
               }
-          });'''
 
-          if old in s:
-              s = s.replace(old, new)
-              open(p, "w", encoding="utf-8").write(s)
-              print("MainActivity.java fixed")
-          else:
-              print("Target code not found; leaving file unchanged")
-          PY
+              private TextView text(String value, float size, int color) {
+                  TextView v = new TextView(this);
+                  v.setText(value);
+                  v.setTextSize(size);
+                  v.setTextColor(color);
+                  v.setGravity(Gravity.CENTER_VERTICAL);
+                  return v;
+              }
+
+              private LinearLayout room(String icon, String title, String subtitle) {
+                  LinearLayout card = new LinearLayout(this);
+                  card.setOrientation(LinearLayout.VERTICAL);
+                  card.setPadding(dp(18), dp(16), dp(18), dp(16));
+                  card.setBackgroundResource(R.drawable.panel);
+
+                  TextView top = text(icon + "  " + title, 19, Color.WHITE);
+                  top.setTypeface(null, android.graphics.Typeface.BOLD);
+                  card.addView(top, new LinearLayout.LayoutParams(-1, dp(34)));
+
+                  TextView sub = text(subtitle, 13, Color.rgb(158, 166, 199));
+                  card.addView(sub, new LinearLayout.LayoutParams(-1, dp(42)));
+
+                  Button open = new Button(this);
+                  open.setText("OPEN  →");
+                  open.setTextColor(Color.WHITE);
+                  open.setTextSize(12);
+                  open.setAllCaps(false);
+                  open.setBackgroundResource(R.drawable.button);
+                  card.addView(open, new LinearLayout.LayoutParams(-1, dp(44)));
+
+                  open.setOnClickListener(v -> {
+                      if (title.equals("AVESON ARTIST CONTROL")) {
+                          startActivity(
+                              new Intent(
+                                  MainActivity.this,
+                                  ArtistControlActivity.class
+                              )
+                          );
+                      } else {
+                          Toast.makeText(
+                              this,
+                              title + " — keyingi bosqichda ochiladi",
+                              Toast.LENGTH_SHORT
+                          ).show();
+                      }
+                  });
+
+                  LinearLayout.LayoutParams p =
+                          new LinearLayout.LayoutParams(-1, 0, 1f);
+                  p.setMargins(0, dp(8), 0, dp(8));
+                  card.setLayoutParams(p);
+
+                  return card;
+              }
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  ScrollView scroll = new ScrollView(this);
+                  scroll.setFillViewport(true);
+                  scroll.setBackgroundColor(Color.rgb(8, 10, 20));
+
+                  LinearLayout root = new LinearLayout(this);
+                  root.setOrientation(LinearLayout.VERTICAL);
+                  root.setPadding(
+                      dp(18),
+                      dp(12),
+                      dp(18),
+                      dp(14)
+                  );
+
+                  LinearLayout header = new LinearLayout(this);
+                  header.setGravity(Gravity.CENTER_VERTICAL);
+
+                  Button menu = new Button(this);
+                  menu.setText("☰");
+                  menu.setTextColor(Color.WHITE);
+                  menu.setTextSize(20);
+                  menu.setBackgroundResource(R.drawable.panel);
+
+                  header.addView(
+                      menu,
+                      new LinearLayout.LayoutParams(
+                          dp(54),
+                          dp(48)
+                      )
+                  );
+
+                  LinearLayout brand = new LinearLayout(this);
+                  brand.setOrientation(LinearLayout.VERTICAL);
+                  brand.setPadding(dp(14), 0, 0, 0);
+
+                  TextView name =
+                          text("AVESON CENTRAL", 20, Color.WHITE);
+                  name.setTypeface(
+                      null,
+                      android.graphics.Typeface.BOLD
+                  );
+
+                  brand.addView(
+                      name,
+                      new LinearLayout.LayoutParams(
+                          -1,
+                          dp(27)
+                      )
+                  );
+
+                  brand.addView(
+                      text(
+                          "CONTROL CENTER",
+                          11,
+                          Color.rgb(158, 166, 199)
+                      ),
+                      new LinearLayout.LayoutParams(
+                          -1,
+                          dp(20)
+                      )
+                  );
+
+                  header.addView(
+                      brand,
+                      new LinearLayout.LayoutParams(
+                          0,
+                          dp(48),
+                          1f
+                      )
+                  );
+
+                  root.addView(
+                      header,
+                      new LinearLayout.LayoutParams(
+                          -1,
+                          dp(54)
+                      )
+                  );
+
+                  TextView title =
+                          text(
+                              "GLOBAL MUSIC ECOSYSTEM",
+                              12,
+                              Color.rgb(56, 189, 248)
+                          );
+
+                  title.setGravity(Gravity.CENTER);
+
+                  LinearLayout.LayoutParams tp =
+                          new LinearLayout.LayoutParams(
+                              -1,
+                              dp(30)
+                          );
+
+                  tp.setMargins(0, dp(8), 0, 0);
+                  root.addView(title, tp);
+
+                  root.addView(
+                      room(
+                          "🎤",
+                          "AVESON ARTIST CONTROL",
+                          "Artistlarni va ularning yuborgan release'larini boshqarish."
+                      )
+                  );
+
+                  root.addView(
+                      room(
+                          "🎵",
+                          "AVESON MUSIC CONTROL",
+                          "AVESON MUSIC katalogi va music tizimini boshqarish."
+                      )
+                  );
+
+                  root.addView(
+                      room(
+                          "🌐",
+                          "AVESON DISTRIBUTION CONTROL",
+                          "Tasdiqlangan release'larni global platformalarga tarqatish."
+                      )
+                  );
+
+                  menu.setOnClickListener(v ->
+                      Toast.makeText(
+                          this,
+                          "Central Menu — keyingi bosqichda qo‘shiladi",
+                          Toast.LENGTH_SHORT
+                      ).show()
+                  );
+
+                  scroll.addView(root);
+                  setContentView(scroll);
+              }
+          }
+          EOF
 
       - name: Fix Kotlin dependencies
         working-directory: aveson_project
