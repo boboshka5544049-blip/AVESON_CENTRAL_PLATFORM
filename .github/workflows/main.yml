@@ -22,14 +22,14 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Check AVESON ZIP
+      - name: Check ZIP
         run: |
-          echo "Checking ZIP..."
+          echo "Checking AVESON ZIP..."
           ls -la
           test -f AVESON_CENTRAL_ARTIST_CONTROL_READY.zip
-          echo "AVESON ZIP FOUND"
+          echo "ZIP FOUND"
 
-      - name: Extract AVESON project
+      - name: Extract project
         run: |
           mkdir -p build_src
           unzip -o AVESON_CENTRAL_ARTIST_CONTROL_READY.zip -d build_src
