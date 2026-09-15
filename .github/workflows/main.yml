@@ -2,20 +2,187 @@ name: Build AVESON CENTRAL APK
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Create AVESON CENTRAL project
+        run: |
+          mkdir -p app/src/main/java/com/aveson/central
+          mkdir -p app/src/main/res/values
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "AVESON_CENTRAL"
+          include(":app")
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.aveson.central'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.aveson.central'
+                  minSdk 24
+                  targetSdk 35
+                  versionCode 1
+                  versionName "1.0"
+              }
+          }
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <application
+                  android:theme="@style/AppTheme"
+                  android:label="AVESON CENTRAL"
+                  android:allowBackup="true"
+                  android:supportsRtl="true">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+
+                  </activity>
+
+              </application>
+
+          </manifest>
+          EOF
+
+          cat > app/src/main/res/values/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+
+              <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
+                  <item name="android:fontFamily">sans</item>
+                  <item name="android:windowLightStatusBar">false</item>
+                  <item name="android:statusBarColor">#080812</item>
+                  <item name="android:navigationBarColor">#080812</item>
+                  <item name="android:colorAccent">#9C6CFF</item>
+              </style>
+
+          </resources>
+          EOF
+
+          cat > app/src/main/java/com/aveson/central/MainActivity.java <<'EOF'
+          package com.aveson.central;
+
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.graphics.Color;
+          import android.graphics.Typeface;
+          import android.view.Gravity;
+          import android.widget.LinearLayout;
+          import android.widget.TextView;
+
+          public class MainActivity extends Activity {
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  LinearLayout root = new LinearLayout(this);
+                  root.setOrientation(LinearLayout.VERTICAL);
+                  root.setGravity(Gravity.CENTER);
+                  root.setPadding(32, 32, 32, 32);
+                  root.setBackgroundColor(Color.rgb(8, 8, 18));
+
+                  TextView title = new TextView(this);
+                  title.setText("AVESON CENTRAL");
+                  title.setTextColor(Color.WHITE);
+                  title.setTextSize(30);
+                  title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                  title.setGravity(Gravity.CENTER);
+
+                  TextView subtitle = new TextView(this);
+                  subtitle.setText("Global Management Platform");
+                  subtitle.setTextColor(Color.rgb(180, 170, 220));
+                  subtitle.setTextSize(16);
+                  subtitle.setGravity(Gravity.CENTER);
+
+                  root.addView(title);
+
+                  LinearLayout.LayoutParams subtitleParams =
+                          new LinearLayout.LayoutParams(
+                                  LinearLayout.LayoutParams.MATCH_PARENT,
+                                  LinearLayout.LayoutParams.WRAP_CONTENT);
+                  subtitleParams.topMargin = 12;
+                  root.addView(subtitle, subtitleParams);
+
+                  addRoom(root, "🎤  AVESON ARTIST CONTROL");
+                  addRoom(root, "🎵  AVESON MUSIC CONTROL");
+                  addRoom(root, "🌐  AVESON DISTRIBUTION CONTROL");
+
+                  setContentView(root);
+              }
+
+              private void addRoom(LinearLayout root, String text) {
+                  TextView room = new TextView(this);
+                  room.setText(text);
+                  room.setTextColor(Color.WHITE);
+                  room.setTextSize(17);
+                  room.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                  room.setGravity(Gravity.CENTER);
+                  room.setPadding(20, 30, 20, 30);
+                  room.setBackgroundColor(Color.rgb(25, 20, 45));
+
+                  LinearLayout.LayoutParams params =
+                          new LinearLayout.LayoutParams(
+                                  LinearLayout.LayoutParams.MATCH_PARENT,
+                                  LinearLayout.LayoutParams.WRAP_CONTENT);
+                  params.topMargin = 24;
+
+                  root.addView(room, params);
+              }
+          }
+          EOF
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -30,6 +197,20 @@ jobs:
 
       - name: Build APK
         run: gradle assembleDebug
+
+      - name: Commit project files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Create AVESON CENTRAL Android project"
+            git push
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
