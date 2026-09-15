@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v5
 
@@ -97,14 +98,18 @@ jobs:
           cat > app/src/main/res/values/styles.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
+
               <style name="AppTheme"
                   parent="android:style/Theme.Material.NoActionBar">
+
                   <item name="android:fontFamily">sans</item>
                   <item name="android:windowLightStatusBar">false</item>
                   <item name="android:statusBarColor">#080812</item>
                   <item name="android:navigationBarColor">#080812</item>
                   <item name="android:colorAccent">#9C6CFF</item>
+
               </style>
+
           </resources>
           EOF
 
@@ -157,6 +162,7 @@ jobs:
 
               private void addRoom(LinearLayout root, String text) {
                   TextView room = new TextView(this);
+
                   room.setText(text);
                   room.setTextColor(Color.WHITE);
                   room.setTextSize(17);
@@ -171,6 +177,7 @@ jobs:
                                   LinearLayout.LayoutParams.WRAP_CONTENT);
 
                   params.topMargin = 24;
+
                   root.addView(room, params);
               }
           }
