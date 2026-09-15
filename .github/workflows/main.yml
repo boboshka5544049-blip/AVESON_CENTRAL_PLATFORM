@@ -555,7 +555,7 @@ jobs:
                           subtitle,
                           new LinearLayout.LayoutParams(
                                   -1,
-                                  dp(40)
+                                  dp(50)
                           )
                   );
 
