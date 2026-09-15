@@ -17,21 +17,54 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
 
-      - name: Check ZIP
+      - name: Check AVESON ZIP
         run: |
           echo "Checking AVESON ZIP..."
-          ls -la
           test -f AVESON_CENTRAL_ARTIST_CONTROL_READY.zip
           echo "ZIP FOUND"
 
-      - name: Extract project
+      - name: Extract AVESON project
         run: |
+          rm -rf build_src
           mkdir -p build_src
           unzip -o AVESON_CENTRAL_ARTIST_CONTROL_READY.zip -d build_src
           echo "ZIP EXTRACTED"
-          find build_src -maxdepth 5 -type f | head -100
+          find build_src -name settings.gradle -o -name settings.gradle.kts
+
+      - name: Find Android project
+        run: |
+          PROJECT_DIR=$(dirname "$(find build_src -name settings.gradle -o -name settings.gradle.kts | head -1)")
+          test -n "$PROJECT_DIR"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "Android project: $PROJECT_DIR"
+
+      - name: Build APK
+        run: |
+          cd "$PROJECT_DIR"
+
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+            ./gradlew assembleDebug --stacktrace
+          else
+            gradle assembleDebug --stacktrace
+          fi
+
+      - name: Collect APK
+        run: |
+          mkdir -p dist
+          find "$PROJECT_DIR" -type f -name "*.apk" -exec cp {} dist/ \;
+          echo "APK FILES:"
+          ls -lh dist
+          test -n "$(find dist -name "*.apk" -print -quit)"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AVESON-CENTRAL-APK
+          path: dist/*.apk
+          if-no-files-found: error
