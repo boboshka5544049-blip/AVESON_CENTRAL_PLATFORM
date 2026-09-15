@@ -42,7 +42,7 @@ jobs:
 
 
       # ============================================================
-      # 4. EXTRACT AVESON CENTRAL PROJECT
+      # 4. EXTRACT PROJECT
       # ============================================================
 
       - name: Extract AVESON CENTRAL project
@@ -309,7 +309,7 @@ jobs:
 
 
       # ============================================================
-      # 6. ARTIST CONTROL — FULL 13 MODULE VERSION
+      # 6. ARTIST CONTROL
       # ============================================================
 
       - name: Replace ArtistControlActivity.java
@@ -318,37 +318,24 @@ jobs:
           cat > app/src/main/java/com/aveson/central/ArtistControlActivity.java <<'EOF'
           package com.aveson.central;
 
-          import android.app.DatePickerDialog;
           import android.graphics.Color;
           import android.graphics.Typeface;
           import android.os.Bundle;
           import android.view.Gravity;
-          import android.view.View;
           import android.widget.Button;
           import android.widget.CheckBox;
           import android.widget.EditText;
           import android.widget.LinearLayout;
           import android.widget.ScrollView;
-          import android.widget.Spinner;
-          import android.widget.ArrayAdapter;
           import android.widget.TextView;
-          import android.widget.Toast;
 
           import androidx.appcompat.app.AppCompatActivity;
-
-          import java.util.Calendar;
 
           public class ArtistControlActivity
                   extends AppCompatActivity {
 
               private final int BG =
                       Color.rgb(7,9,18);
-
-              private final int CARD =
-                      Color.rgb(18,22,40);
-
-              private final int CARD2 =
-                      Color.rgb(24,29,51);
 
               private final int TEXT =
                       Color.WHITE;
@@ -358,15 +345,6 @@ jobs:
 
               private final int BLUE =
                       Color.rgb(56,189,248);
-
-              private final int PURPLE =
-                      Color.rgb(139,92,246);
-
-              private final int GREEN =
-                      Color.rgb(52,211,153);
-
-              private final int RED =
-                      Color.rgb(248,113,113);
 
               private LinearLayout root;
 
@@ -378,11 +356,6 @@ jobs:
                                   .density
                           + 0.5f);
               }
-
-
-              // ====================================================
-              // BASIC UI
-              // ====================================================
 
               private TextView label(
                       String value,
@@ -429,10 +402,7 @@ jobs:
                   b.setTextColor(TEXT);
                   b.setTextSize(14);
                   b.setAllCaps(false);
-
-                  b.setGravity(
-                          Gravity.CENTER);
-
+                  b.setGravity(Gravity.CENTER);
                   b.setBackgroundResource(
                           R.drawable.button);
 
@@ -467,7 +437,7 @@ jobs:
                   return b;
               }
 
-              private LinearLayout page() {
+              private void page() {
 
                   ScrollView scroll =
                           new ScrollView(this);
@@ -489,8 +459,6 @@ jobs:
                   scroll.addView(root);
 
                   setContentView(scroll);
-
-                  return root;
               }
 
               private void header(
@@ -523,9 +491,7 @@ jobs:
                               dp(8),
                               0);
 
-                      top.addView(
-                              back,
-                              bp);
+                      top.addView(back,bp);
 
                       back.setOnClickListener(
                               v -> home());
@@ -546,9 +512,7 @@ jobs:
                           0,
                           0);
 
-                  top.addView(
-                          menu,
-                          mp);
+                  top.addView(menu,mp);
 
                   menu.setOnClickListener(
                           v -> menu());
@@ -577,8 +541,7 @@ jobs:
                                   13,
                                   MUTED);
 
-                  t.setGravity(
-                          Gravity.CENTER);
+                  t.setGravity(Gravity.CENTER);
 
                   root.addView(
                           t,
@@ -610,7 +573,7 @@ jobs:
                   root.addView(t,p);
               }
 
-              private LinearLayout card(
+              private void card(
                       String heading,
                       String body) {
 
@@ -645,8 +608,7 @@ jobs:
                                   13,
                                   MUTED);
 
-                  b.setGravity(
-                          Gravity.TOP);
+                  b.setGravity(Gravity.TOP);
 
                   c.addView(
                           h,
@@ -658,7 +620,7 @@ jobs:
                           b,
                           new LinearLayout.LayoutParams(
                                   -1,
-                                  dp(60)));
+                                  dp(90)));
 
                   LinearLayout.LayoutParams cp =
                           new LinearLayout.LayoutParams(
@@ -672,8 +634,6 @@ jobs:
                           dp(6));
 
                   root.addView(c,cp);
-
-                  return c;
               }
 
               private EditText field(
@@ -716,16 +676,12 @@ jobs:
               private void toast(
                       String message) {
 
-                  Toast.makeText(
+                  android.widget.Toast.makeText(
                           this,
                           message,
-                          Toast.LENGTH_SHORT).show();
+                          android.widget.Toast.LENGTH_SHORT)
+                          .show();
               }
-
-
-              // ====================================================
-              // HOME
-              // ====================================================
 
               @Override
               protected void onCreate(
@@ -735,6 +691,10 @@ jobs:
 
                   home();
               }
+
+              # ============================================================
+              # HOME
+              # ============================================================
 
               private void home() {
 
@@ -783,10 +743,9 @@ jobs:
                           v -> videos());
               }
 
-
-              // ====================================================
-              // 1. ARTISTS
-              // ====================================================
+              # ============================================================
+              # ARTISTS 2.0
+              # ============================================================
 
               private void artists() {
 
@@ -797,47 +756,206 @@ jobs:
                           true);
 
                   subtitle(
-                          "All registered AVESON artists");
+                          "AVESON artist management center");
+
+                  section("ARTIST DATABASE");
 
                   EditText search =
                           field(
-                                  "Search artist / Artist ID");
+                                  "🔎  Search artist / Artist ID");
 
                   root.addView(search);
 
                   card(
-                          "ARTIST-0001",
+                          "ACTIVE ARTISTS",
+                          "Total: 248\n" +
+                          "Verified: 231\n" +
+                          "Active releases: 684\n" +
+                          "Active videos: 192");
+
+                  card(
+                          "PENDING ARTISTS",
+                          "Waiting for review: 12\n" +
+                          "Documents pending: 7\n" +
+                          "Profile review: 5");
+
+                  card(
+                          "SUSPENDED",
+                          "Currently suspended: 3\n" +
+                          "Rights issues: 1\n" +
+                          "Policy review: 2");
+
+                  section("ARTIST LIST");
+
+                  card(
+                          "👤  ARTIST-0001",
                           "Artist: Alex Morgan\n" +
-                          "Status: ACTIVE\n" +
+                          "Status: 🟢 ACTIVE\n" +
+                          "Country: Uzbekistan\n" +
                           "Releases: 8\n" +
                           "Videos: 3\n" +
-                          "Country: Uzbekistan");
+                          "Earnings: $4,218.40\n" +
+                          "Joined: 12 Mar 2026");
+
+                  Button alex =
+                          menuButton(
+                                  "OPEN ALEX MORGAN PROFILE  →");
+
+                  root.addView(alex);
+
+                  alex.setOnClickListener(
+                          v -> artistProfile());
 
                   card(
-                          "ARTIST-0002",
+                          "👤  ARTIST-0002",
                           "Artist: Nova Ray\n" +
-                          "Status: PENDING\n" +
+                          "Status: 🟡 PENDING\n" +
+                          "Country: Kazakhstan\n" +
                           "Releases: 2\n" +
                           "Videos: 1\n" +
-                          "Country: Kazakhstan");
+                          "Earnings: $842.20\n" +
+                          "Joined: 08 Sep 2026");
+
+                  Button nova =
+                          menuButton(
+                                  "OPEN NOVA RAY PROFILE  →");
+
+                  root.addView(nova);
+
+                  nova.setOnClickListener(
+                          v -> toast(
+                                  "Nova Ray profile opened"));
 
                   card(
-                          "ARTIST-0003",
+                          "👤  ARTIST-0003",
                           "Artist: Midnight Soul\n" +
-                          "Status: ACTIVE\n" +
+                          "Status: 🟢 ACTIVE\n" +
+                          "Country: Türkiye\n" +
                           "Releases: 14\n" +
                           "Videos: 5\n" +
-                          "Country: Türkiye");
+                          "Earnings: $8,920.10\n" +
+                          "Joined: 21 Jan 2026");
 
-                  Button profile =
+                  Button midnight =
                           menuButton(
-                                  "OPEN ARTIST PROFILE");
+                                  "OPEN MIDNIGHT SOUL PROFILE  →");
 
-                  root.addView(profile);
+                  root.addView(midnight);
 
-                  profile.setOnClickListener(
-                          v -> artistProfile());
+                  midnight.setOnClickListener(
+                          v -> toast(
+                                  "Midnight Soul profile opened"));
+
+                  section("ARTIST ACTIONS");
+
+                  Button add =
+                          menuButton(
+                                  "＋  ADD / INVITE ARTIST");
+
+                  Button pending =
+                          menuButton(
+                                  "⏳  VIEW PENDING ARTISTS");
+
+                  Button suspended =
+                          menuButton(
+                                  "🔴  VIEW SUSPENDED ARTISTS");
+
+                  root.addView(add);
+                  root.addView(pending);
+                  root.addView(suspended);
+
+                  add.setOnClickListener(
+                          v -> artistInvite());
+
+                  pending.setOnClickListener(
+                          v -> toast(
+                                  "Pending artists opened"));
+
+                  suspended.setOnClickListener(
+                          v -> toast(
+                                  "Suspended artists opened"));
               }
+
+              # ============================================================
+              # ADD / INVITE ARTIST
+              # ============================================================
+
+              private void artistInvite() {
+
+                  page();
+
+                  header(
+                          "ADD / INVITE ARTIST",
+                          true);
+
+                  subtitle(
+                          "Create an artist invitation");
+
+                  EditText name =
+                          field("Artist name");
+
+                  EditText email =
+                          field("Artist email");
+
+                  EditText country =
+                          field("Country");
+
+                  EditText language =
+                          field("Primary language");
+
+                  root.addView(name);
+                  root.addView(email);
+                  root.addView(country);
+                  root.addView(language);
+
+                  section("ACCOUNT STATUS");
+
+                  CheckBox verified =
+                          new CheckBox(this);
+
+                  verified.setText(
+                          "Mark artist as verified");
+
+                  verified.setTextColor(TEXT);
+
+                  root.addView(verified);
+
+                  Button invite =
+                          menuButton(
+                                  "📨  SEND ARTIST INVITATION");
+
+                  root.addView(invite);
+
+                  invite.setOnClickListener(
+                          v -> {
+
+                              String n =
+                                      name.getText()
+                                              .toString()
+                                              .trim();
+
+                              String e =
+                                      email.getText()
+                                              .toString()
+                                              .trim();
+
+                              if (n.isEmpty() ||
+                                      e.isEmpty()) {
+
+                                  toast(
+                                          "Artist name va email kiriting");
+
+                              } else {
+
+                                  toast(
+                                          "Artist invitation created");
+                              }
+                          });
+              }
+
+              # ============================================================
+              # ARTIST PROFILE
+              # ============================================================
 
               private void artistProfile() {
 
@@ -872,20 +990,48 @@ jobs:
                           "Last submission: 14 Sep 2026\n" +
                           "Pending items: 2");
 
+                  section("ARTIST CONTROL");
+
+                  Button approve =
+                          menuButton(
+                                  "✅  APPROVE ARTIST");
+
+                  Button suspend =
+                          menuButton(
+                                  "🔴  SUSPEND ARTIST");
+
+                  Button documents =
+                          menuButton(
+                                  "📄  REVIEW DOCUMENTS");
+
                   Button releases =
                           menuButton(
-                                  "VIEW ARTIST RELEASES");
+                                  "🎵  VIEW ARTIST RELEASES");
 
+                  root.addView(approve);
+                  root.addView(suspend);
+                  root.addView(documents);
                   root.addView(releases);
+
+                  approve.setOnClickListener(
+                          v -> toast(
+                                  "Artist approved"));
+
+                  suspend.setOnClickListener(
+                          v -> toast(
+                                  "Artist suspended"));
+
+                  documents.setOnClickListener(
+                          v -> toast(
+                                  "Artist documents opened"));
 
                   releases.setOnClickListener(
                           v -> releaseReview());
               }
 
-
-              // ====================================================
-              // 2. RELEASE REVIEW
-              // ====================================================
+              # ============================================================
+              # RELEASE REVIEW
+              # ============================================================
 
               private void releaseReview() {
 
@@ -1034,10 +1180,9 @@ jobs:
                           });
               }
 
-
-              // ====================================================
-              // 3. PENDING REVIEW
-              // ====================================================
+              # ============================================================
+              # PENDING
+              # ============================================================
 
               private void pending() {
 
@@ -1080,10 +1225,9 @@ jobs:
                           v -> fullReleaseReview());
               }
 
-
-              // ====================================================
-              // 4. VIDEO & CLIPS
-              // ====================================================
+              # ============================================================
+              # VIDEO
+              # ============================================================
 
               private void videos() {
 
@@ -1135,10 +1279,9 @@ jobs:
                                   "Video rejected"));
               }
 
-
-              // ====================================================
-              // 5. APPROVED
-              // ====================================================
+              # ============================================================
+              # APPROVED
+              # ============================================================
 
               private void approved() {
 
@@ -1181,10 +1324,9 @@ jobs:
                           v -> distribution());
               }
 
-
-              // ====================================================
-              // 6. REJECTED
-              // ====================================================
+              # ============================================================
+              # REJECTED
+              # ============================================================
 
               private void rejected() {
 
@@ -1226,10 +1368,9 @@ jobs:
                                   "Artist notification queued"));
               }
 
-
-              // ====================================================
-              // 7. DISTRIBUTION
-              // ====================================================
+              # ============================================================
+              # DISTRIBUTION
+              # ============================================================
 
               private void distribution() {
 
@@ -1290,10 +1431,9 @@ jobs:
                                   "Distribution delivery started"));
               }
 
-
-              // ====================================================
-              // 8. RIGHTS & COPYRIGHT
-              // ====================================================
+              # ============================================================
+              # RIGHTS
+              # ============================================================
 
               private void rights() {
 
@@ -1347,10 +1487,9 @@ jobs:
                                   "Rights verification complete"));
               }
 
-
-              // ====================================================
-              // 9. ROYALTIES
-              // ====================================================
+              # ============================================================
+              # ROYALTIES
+              # ============================================================
 
               private void royalties() {
 
@@ -1402,10 +1541,9 @@ jobs:
                                   "Statement opened"));
               }
 
-
-              // ====================================================
-              // 10. ANALYTICS
-              // ====================================================
+              # ============================================================
+              # ANALYTICS
+              # ============================================================
 
               private void analytics() {
 
@@ -1464,13 +1602,11 @@ jobs:
                           "Monthly\n" +
                           "Yearly\n\n" +
                           "▁▂▃▄▅▆▇█▇█");
-
               }
 
-
-              // ====================================================
-              // 11. PARAMETERS
-              // ====================================================
+              # ============================================================
+              # PARAMETERS
+              # ============================================================
 
               private void parameters() {
 
@@ -1528,10 +1664,9 @@ jobs:
                                   "Parameters saved"));
               }
 
-
-              // ====================================================
-              // 12. RULES / TERMS
-              // ====================================================
+              # ============================================================
+              # RULES
+              # ============================================================
 
               private void rules() {
 
@@ -1591,10 +1726,9 @@ jobs:
                   root.addView(accept);
               }
 
-
-              // ====================================================
-              // 13. SECURITY
-              // ====================================================
+              # ============================================================
+              # SECURITY
+              # ============================================================
 
               private void security() {
 
@@ -1647,10 +1781,9 @@ jobs:
                                   "Session ended in prototype"));
               }
 
-
-              // ====================================================
-              // MENU
-              // ====================================================
+              # ============================================================
+              # MENU
+              # ============================================================
 
               private void menu() {
 
@@ -1741,7 +1874,17 @@ jobs:
 
 
       # ============================================================
-      # 7. KOTLIN DEPENDENCY FIX
+      # 7. REMOVE ACCIDENTAL COMMENT MARKERS
+      # ============================================================
+
+      - name: Clean Java section markers
+        working-directory: aveson_project
+        run: |
+          sed -i '/^[[:space:]]*#[[:space:]]*=====/d' app/src/main/java/com/aveson/central/ArtistControlActivity.java
+
+
+      # ============================================================
+      # 8. KOTLIN DEPENDENCY FIX
       # ============================================================
 
       - name: Fix Kotlin dependencies
@@ -1757,7 +1900,7 @@ jobs:
 
 
       # ============================================================
-      # 8. BUILD APK
+      # 9. BUILD
       # ============================================================
 
       - name: Build APK
@@ -1767,11 +1910,11 @@ jobs:
 
 
       # ============================================================
-      # 9. UPLOAD APK
+      # 10. UPLOAD APK
       # ============================================================
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: AVESON-CENTRAL-ARTIST-CONTROL-FULL
+          name: AVESON-CENTRAL-ARTIST-CONTROL-ARTISTS-2-0
           path: aveson_project/app/build/outputs/apk/debug/app-debug.apk
