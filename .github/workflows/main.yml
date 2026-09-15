@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -22,16 +22,16 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Check ZIP
+      - name: Check AVESON ZIP
         run: |
-          echo "Checking AVESON ZIP..."
+          echo "Checking ZIP..."
           ls -la
           test -f AVESON_CENTRAL_ARTIST_CONTROL_READY.zip
-          echo "ZIP FOUND"
+          echo "AVESON ZIP FOUND"
 
-      - name: Extract project
+      - name: Extract AVESON project
         run: |
           mkdir -p build_src
           unzip -o AVESON_CENTRAL_ARTIST_CONTROL_READY.zip -d build_src
           echo "ZIP EXTRACTED"
-          find build_src -maxdepth 4 -type f | head -50
+          find build_src -maxdepth 5 -type f | head -100
