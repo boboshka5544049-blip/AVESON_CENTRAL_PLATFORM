@@ -31,75 +31,378 @@ jobs:
           mkdir -p aveson_project
           unzip -o AVESON_CENTRAL_ARTIST_CONTROL_READY.zip -d aveson_project
 
-      - name: Verify Java source
+      - name: Write clean MainActivity.java
         working-directory: aveson_project
         run: |
-          echo "Checking ArtistControlActivity.java..."
+          mkdir -p app/src/main/java/com/aveson/central
 
+          cat > app/src/main/java/com/aveson/central/MainActivity.java <<'JAVA'
+          package com.aveson.central;
+
+          import android.content.Intent;
+          import android.graphics.Color;
+          import android.graphics.Typeface;
+          import android.os.Bundle;
+          import android.view.Gravity;
+          import android.view.View;
+          import android.widget.Button;
+          import android.widget.LinearLayout;
+          import android.widget.ScrollView;
+          import android.widget.TextView;
+          import android.widget.Toast;
+
+          import androidx.appcompat.app.AppCompatActivity;
+
+          public class MainActivity extends AppCompatActivity {
+
+              private static final int BG = Color.rgb(7, 8, 18);
+              private static final int CARD = Color.rgb(18, 20, 36);
+              private static final int WHITE = Color.WHITE;
+              private static final int MUTED = Color.rgb(170, 175, 195);
+              private static final int PURPLE = Color.rgb(145, 75, 255);
+              private static final int BLUE = Color.rgb(60, 145, 255);
+              private static final int CYAN = Color.rgb(45, 210, 220);
+
+              private int dp(int value) {
+                  return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
+              }
+
+              private TextView text(
+                      String value,
+                      float size,
+                      int color,
+                      boolean bold
+              ) {
+                  TextView t = new TextView(this);
+                  t.setText(value);
+                  t.setTextSize(size);
+                  t.setTextColor(color);
+                  t.setGravity(Gravity.CENTER_VERTICAL);
+                  t.setTypeface(
+                          bold
+                                  ? Typeface.DEFAULT_BOLD
+                                  : Typeface.DEFAULT
+                  );
+                  return t;
+              }
+
+              private LinearLayout.LayoutParams params(
+                      int width,
+                      int height,
+                      int bottom
+              ) {
+                  LinearLayout.LayoutParams p =
+                          new LinearLayout.LayoutParams(
+                                  width == 0 ? 0 : dp(width),
+                                  height == 0 ? 0 : dp(height)
+                          );
+
+                  if (width == -1) {
+                      p.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                  }
+
+                  if (height == -1) {
+                      p.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                  }
+
+                  p.setMargins(
+                          dp(16),
+                          0,
+                          dp(16),
+                          dp(bottom)
+                  );
+
+                  return p;
+              }
+
+              private Button roomButton(
+                      String title,
+                      String description,
+                      int accent
+              ) {
+                  Button b = new Button(this);
+
+                  b.setText(
+                          title
+                                  + "\n"
+                                  + description
+                                  + "\n\n"
+                                  + "OPEN  →"
+                  );
+
+                  b.setTextColor(WHITE);
+                  b.setTextSize(16);
+                  b.setGravity(Gravity.CENTER_VERTICAL);
+                  b.setAllCaps(false);
+                  b.setTypeface(Typeface.DEFAULT_BOLD);
+                  b.setPadding(
+                          dp(20),
+                          dp(16),
+                          dp(20),
+                          dp(16)
+                  );
+
+                  android.graphics.drawable.GradientDrawable bg =
+                          new android.graphics.drawable.GradientDrawable();
+
+                  bg.setColor(CARD);
+                  bg.setCornerRadius(dp(24));
+                  bg.setStroke(dp(2), accent);
+
+                  b.setBackground(bg);
+
+                  return b;
+              }
+
+              private void showToast(String message) {
+                  Toast.makeText(
+                          this,
+                          message,
+                          Toast.LENGTH_SHORT
+                  ).show();
+              }
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  showHome();
+              }
+
+              private void showHome() {
+                  LinearLayout root = new LinearLayout(this);
+                  root.setOrientation(LinearLayout.VERTICAL);
+                  root.setBackgroundColor(BG);
+
+                  ScrollView scroll = new ScrollView(this);
+
+                  LinearLayout content =
+                          new LinearLayout(this);
+
+                  content.setOrientation(
+                          LinearLayout.VERTICAL
+                  );
+
+                  content.setPadding(
+                          0,
+                          dp(28),
+                          0,
+                          dp(32)
+                  );
+
+                  TextView brand =
+                          text(
+                                  "AVESON",
+                                  34,
+                                  WHITE,
+                                  true
+                          );
+
+                  brand.setGravity(Gravity.CENTER);
+                  content.addView(
+                          brand,
+                          params(-1, 50, 4)
+                  );
+
+                  TextView central =
+                          text(
+                                  "CENTRAL",
+                                  24,
+                                  PURPLE,
+                                  true
+                          );
+
+                  central.setGravity(Gravity.CENTER);
+                  content.addView(
+                          central,
+                          params(-1, 36, 4)
+                  );
+
+                  TextView subtitle =
+                          text(
+                                  "MANAGEMENT CONTROL CENTER",
+                                  13,
+                                  MUTED,
+                                  false
+                          );
+
+                  subtitle.setGravity(Gravity.CENTER);
+                  content.addView(
+                          subtitle,
+                          params(-1, 32, 28)
+                  );
+
+                  TextView section =
+                          text(
+                                  "CONTROL ROOMS",
+                                  14,
+                                  MUTED,
+                                  true
+                          );
+
+                  content.addView(
+                          section,
+                          params(-1, 40, 8)
+                  );
+
+                  Button artistControl =
+                          roomButton(
+                                  "AVESON ARTIST CONTROL",
+                                  "Artist management • Review • Approve",
+                                  PURPLE
+                          );
+
+                  content.addView(
+                          artistControl,
+                          params(-1, 150, 16)
+                  );
+
+                  artistControl.setOnClickListener(
+                          new View.OnClickListener() {
+                              @Override
+                              public void onClick(View v) {
+                                  Intent intent =
+                                          new Intent(
+                                                  MainActivity.this,
+                                                  ArtistControlActivity.class
+                                          );
+
+                                  startActivity(intent);
+                              }
+                          }
+                  );
+
+                  Button musicControl =
+                          roomButton(
+                                  "AVESON MUSIC CONTROL",
+                                  "Catalog • Playlists • Content",
+                                  BLUE
+                          );
+
+                  content.addView(
+                          musicControl,
+                          params(-1, 150, 16)
+                  );
+
+                  musicControl.setOnClickListener(
+                          new View.OnClickListener() {
+                              @Override
+                              public void onClick(View v) {
+                                  showToast(
+                                          "AVESON MUSIC CONTROL — keyingi bosqichda ochiladi"
+                                  );
+                              }
+                          }
+                  );
+
+                  Button distributionControl =
+                          roomButton(
+                                  "AVESON DISTRIBUTION CONTROL",
+                                  "Platforms • Status • Reports",
+                                  CYAN
+                          );
+
+                  content.addView(
+                          distributionControl,
+                          params(-1, 150, 24)
+                  );
+
+                  distributionControl.setOnClickListener(
+                          new View.OnClickListener() {
+                              @Override
+                              public void onClick(View v) {
+                                  showToast(
+                                          "AVESON DISTRIBUTION CONTROL — keyingi bosqichda ochiladi"
+                                  );
+                              }
+                          }
+                  );
+
+                  TextView footer =
+                          text(
+                                  "AVESON GLOBAL MUSIC COMPANY",
+                                  11,
+                                  MUTED,
+                                  false
+                          );
+
+                  footer.setGravity(Gravity.CENTER);
+                  content.addView(
+                          footer,
+                          params(-1, 30, 0)
+                  );
+
+                  scroll.addView(content);
+
+                  root.addView(
+                          scroll,
+                          new LinearLayout.LayoutParams(
+                                  LinearLayout.LayoutParams.MATCH_PARENT,
+                                  LinearLayout.LayoutParams.MATCH_PARENT
+                          )
+                  );
+
+                  setContentView(root);
+              }
+          }
+          JAVA
+
+      - name: Clean ArtistControlActivity Java comments
+        working-directory: aveson_project
+        run: |
           JAVA_FILE="app/src/main/java/com/aveson/central/ArtistControlActivity.java"
 
-          if [ ! -f "$JAVA_FILE" ]; then
-            echo "ERROR: ArtistControlActivity.java not found!"
-            exit 1
+          if [ -f "$JAVA_FILE" ]; then
+            sed -i 's/^[[:space:]]*#[[:space:]]*/\/\/ /' "$JAVA_FILE"
+            sed -i '/^[[:space:]]*#/d' "$JAVA_FILE"
           fi
 
-          echo "Java file found."
-
-      - name: Clean Java section markers
+      - name: Fix duplicate pending artist button
         working-directory: aveson_project
         run: |
-          JAVA_FILE="app/src/main/java/com/aveson/central/ArtistControlActivity.java"
-
-          sed -i 's/^[[:space:]]*#[[:space:]]*/\/\/ /' "$JAVA_FILE"
-
-          echo "Java section markers cleaned."
-
-      - name: Fix duplicate pending variable
-        working-directory: aveson_project
-        run: |
-          JAVA_FILE="app/src/main/java/com/aveson/central/ArtistControlActivity.java"
-
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path("app/src/main/java/com/aveson/central/ArtistControlActivity.java")
+          path = Path(
+              "app/src/main/java/com/aveson/central/ArtistControlActivity.java"
+          )
+
+          if not path.exists():
+              print("ArtistControlActivity.java not found.")
+              raise SystemExit(0)
+
           text = path.read_text()
 
-          old = '''Button pending =
-                    menuButton(
-                            "⏳  VIEW PENDING ARTISTS");'''
+          text = text.replace(
+              '''Button pending =
+                  menuButton(
+                          "⏳  VIEW PENDING ARTISTS");''',
+              '''Button pendingArtistsButton =
+                  menuButton(
+                          "⏳  VIEW PENDING ARTISTS");'''
+          )
 
-          new = '''Button pendingArtistsButton =
-                    menuButton(
-                            "⏳  VIEW PENDING ARTISTS");'''
-
-          text = text.replace(old, new)
-
-          old2 = '''root.addView(pending);
-                    pending.setOnClickListener(
-                            v -> toast(
-                                    "Pending artists opened"));'''
-
-          new2 = '''root.addView(pendingArtistsButton);
-                    pendingArtistsButton.setOnClickListener(
-                            v -> toast(
-                                    "Pending artists opened"));'''
-
-          text = text.replace(old2, new2)
+          text = text.replace(
+              '''root.addView(pending);
+                  pending.setOnClickListener(
+                      v -> toast(
+                          "Pending artists opened"));''',
+              '''root.addView(pendingArtistsButton);
+                  pendingArtistsButton.setOnClickListener(
+                      v -> toast(
+                          "Pending artists opened"));'''
+          )
 
           path.write_text(text)
-          print("Duplicate pending variable check completed.")
+
+          print("Duplicate pending variable fix completed.")
           PY
 
-      - name: Remove accidental Java hash comments
+      - name: Verify MainActivity Java
         working-directory: aveson_project
         run: |
-          JAVA_FILE="app/src/main/java/com/aveson/central/ArtistControlActivity.java"
-
-          sed -i '/^[[:space:]]*#/d' "$JAVA_FILE"
-
-          echo "Remaining hash-comment lines:"
-          grep -n '^[[:space:]]*#' "$JAVA_FILE" || true
+          echo "Checking MainActivity.java..."
+          sed -n '1,260p' app/src/main/java/com/aveson/central/MainActivity.java
 
       - name: Fix Kotlin dependencies
         working-directory: aveson_project
@@ -111,12 +414,6 @@ jobs:
               exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
           }
           EOF
-
-      - name: Check Gradle files
-        working-directory: aveson_project
-        run: |
-          echo "Project files:"
-          find . -maxdepth 3 -type f | sort
 
       - name: Build APK
         working-directory: aveson_project
