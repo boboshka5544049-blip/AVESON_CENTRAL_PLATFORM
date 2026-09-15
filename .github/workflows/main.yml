@@ -1873,15 +1873,14 @@ jobs:
           EOF
 
 
-      # ============================================================
-      # 7. REMOVE ACCIDENTAL COMMENT MARKERS
+            # ============================================================
+      # 7. CLEAN JAVA FILE
       # ============================================================
 
-      - name: Clean Java section markers
+      - name: Clean Java file
         working-directory: aveson_project
         run: |
-          sed -i '/^[[:space:]]*#[[:space:]]*=====/d' app/src/main/java/com/aveson/central/ArtistControlActivity.java
-
+          sed -i '/#/d' app/src/main/java/com/aveson/central/ArtistControlActivity.java
 
       # ============================================================
       # 8. KOTLIN DEPENDENCY FIX
