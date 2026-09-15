@@ -465,7 +465,7 @@ jobs:
                   backParams.setMargins(
                           0,
                           0,
-                          dp(8),
+                          dp(12),
                           0
                   );
 
@@ -498,7 +498,7 @@ jobs:
                           );
 
                   menuParams.setMargins(
-                          dp(8),
+                          dp(12),
                           0,
                           0,
                           0
@@ -555,7 +555,7 @@ jobs:
                           subtitle,
                           new LinearLayout.LayoutParams(
                                   -1,
-                                  dp(50)
+                                  dp(40)
                           )
                   );
 
