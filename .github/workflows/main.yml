@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Create AVESON CENTRAL project
+      - name: Create Gradle project
         run: |
           mkdir -p app/src/main/java/com/aveson/central
           mkdir -p app/src/main/res/values
@@ -76,9 +76,7 @@ jobs:
 
               <application
                   android:theme="@style/AppTheme"
-                  android:label="AVESON CENTRAL"
-                  android:allowBackup="true"
-                  android:supportsRtl="true">
+                  android:label="AVESON CENTRAL">
 
                   <activity
                       android:name=".MainActivity"
@@ -99,15 +97,14 @@ jobs:
           cat > app/src/main/res/values/styles.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-
-              <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
+              <style name="AppTheme"
+                  parent="android:style/Theme.Material.NoActionBar">
                   <item name="android:fontFamily">sans</item>
                   <item name="android:windowLightStatusBar">false</item>
                   <item name="android:statusBarColor">#080812</item>
                   <item name="android:navigationBarColor">#080812</item>
                   <item name="android:colorAccent">#9C6CFF</item>
               </style>
-
           </resources>
           EOF
 
@@ -141,20 +138,15 @@ jobs:
                   title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
                   title.setGravity(Gravity.CENTER);
 
+                  root.addView(title);
+
                   TextView subtitle = new TextView(this);
                   subtitle.setText("Global Management Platform");
                   subtitle.setTextColor(Color.rgb(180, 170, 220));
                   subtitle.setTextSize(16);
                   subtitle.setGravity(Gravity.CENTER);
 
-                  root.addView(title);
-
-                  LinearLayout.LayoutParams subtitleParams =
-                          new LinearLayout.LayoutParams(
-                                  LinearLayout.LayoutParams.MATCH_PARENT,
-                                  LinearLayout.LayoutParams.WRAP_CONTENT);
-                  subtitleParams.topMargin = 12;
-                  root.addView(subtitle, subtitleParams);
+                  root.addView(subtitle);
 
                   addRoom(root, "🎤  AVESON ARTIST CONTROL");
                   addRoom(root, "🎵  AVESON MUSIC CONTROL");
@@ -177,8 +169,8 @@ jobs:
                           new LinearLayout.LayoutParams(
                                   LinearLayout.LayoutParams.MATCH_PARENT,
                                   LinearLayout.LayoutParams.WRAP_CONTENT);
-                  params.topMargin = 24;
 
+                  params.topMargin = 24;
                   root.addView(room, params);
               }
           }
@@ -198,19 +190,13 @@ jobs:
       - name: Build APK
         run: gradle assembleDebug
 
-      - name: Commit project files
+      - name: Save project files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add .
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Create AVESON CENTRAL Android project"
-            git push
-          fi
+          git commit -m "Create AVESON CENTRAL project" || true
+          git push || true
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
