@@ -1,0 +1,28 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.aveson.central.app-debug-4:/values_values.arsc.flat",
+            "map": [
+                {
+                    "source": "/home/runner/work/AVESON_CENTRAL_PLATFORM/AVESON_CENTRAL_PLATFORM/app/src/main/res/values/styles.xml",
+                    "from": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "56",
+                        "endLines": "12",
+                        "endColumns": "12",
+                        "endOffsets": "445"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "10",
+                        "endColumns": "12",
+                        "endOffsets": "436"
+                    }
+                }
+            ]
+        }
+    ]
+}
