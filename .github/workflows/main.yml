@@ -15,54 +15,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Find AVESON CENTRAL ZIP
+      - name: Check project
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -type f -name 'AVESON_CENTRAL_GITHUB_READ*.zip' -print -quit)
-
-          if [ -z "$ZIP_FILE" ]; then
-            echo "ERROR: AVESON CENTRAL ZIP topilmadi."
-            echo "Repository root fayllari:"
-            ls -la
-            exit 1
-          fi
-
-          echo "ZIP topildi: $ZIP_FILE"
-          echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_ENV"
-
-      - name: Extract AVESON CENTRAL project
-        run: |
-          rm -rf extracted_project
-          mkdir extracted_project
-
-          unzip -q "$ZIP_FILE" -d extracted_project
-
-          echo "ZIP ichidagi fayllar:"
-          find extracted_project -maxdepth 2 -type f | sort
-
-      - name: Prepare Gradle project
-        run: |
-          if [ -f extracted_project/settings.gradle ]; then
-            cp -a extracted_project/. .
-          else
-            PROJECT_DIR=$(find extracted_project -name settings.gradle -type f -printf '%h\n' | head -n 1)
-
-            if [ -z "$PROJECT_DIR" ]; then
-              echo "ERROR: settings.gradle topilmadi."
-              find extracted_project -maxdepth 4 -type f | sort
-              exit 1
-            fi
-
-            cp -a "$PROJECT_DIR"/. .
-          fi
-
-          echo "Gradle project:"
+          echo "Repository:"
           ls -la
 
-          echo "settings.gradle:"
-          test -f settings.gradle
+          echo "Checking Gradle files..."
 
-          echo "app papkasi:"
-          test -d app
+          test -f settings.gradle || {
+            echo "ERROR: settings.gradle topilmadi!"
+            exit 1
+          }
+
+          test -f build.gradle || {
+            echo "ERROR: build.gradle topilmadi!"
+            exit 1
+          }
+
+          test -d app || {
+            echo "ERROR: app papkasi topilmadi!"
+            exit 1
+          }
+
+          echo "AVESON CENTRAL Gradle project OK."
 
       - name: Set up Java 17
         uses: actions/setup-java@v5
@@ -75,12 +50,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build APK
+      - name: Build AVESON CENTRAL APK
         run: |
           gradle assembleDebug
 
       - name: Upload AVESON CENTRAL APK
         uses: actions/upload-artifact@v4
         with:
-          name: AVESON-CENTRAL-real-debug
+          name: AVESON-CENTRAL-debug
           path: app/build/outputs/apk/debug/app-debug.apk
